@@ -10,14 +10,16 @@ import java.util.logging.Logger;
 
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapClosedException;
+import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.nio.JMemory.Type;
+import org.jnetpcap.packet.JMappedHeader;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 
 public class PcapReader implements Closeable {
 
 	// overhead 0.00036
-
+	//TODO add property
 	private static final long PCAP_MAXIMUM_SLICE_SIZE = 64 * 1024 * 1024;
 	private static final long PCAP_PACKET_TRESHOLD = 2000;
 	private static final int PCAP_GLOBAL_HEADER_LENGTH = 24;
@@ -43,7 +45,7 @@ public class PcapReader implements Closeable {
 			throw new PcapClosedException(
 					"Error while opening device for capture: "
 							+ errbuf.toString());
-
+		Logger.getLogger(this.getClass().getSimpleName()).info("Allocated: " + JMemory.totalAllocated());
 		packets = new LinkedList<>();
 		handler = new PacketHandler();
 	}
@@ -90,13 +92,15 @@ public class PcapReader implements Closeable {
 		@Override
 		public void nextPacket(PcapPacket packet, String user) {
 			// TODO check if this size is correct
-			totalSize += packet.getTotalSize();
+			totalSize += packet.getTotalSize() - 15 * 1024 * 1024;
 			count++;
 			// TODO CHECK
 			packets.add(packet);
 			if (totalSize >= PCAP_MAXIMUM_SLICE_SIZE - PCAP_PACKET_TRESHOLD) {
 				Logger.getLogger("PcapReader").info(
 						"Recorded " + count + " packets.");
+				Logger.getLogger("PcapReader").info(
+						"Total size approximately " + totalSize + " bytes.");
 				pcap.breakloop();
 			}
 		}

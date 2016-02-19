@@ -16,7 +16,7 @@ import org.jnetpcap.packet.PcapPacket;
 
 public class PcapSliceWriter implements PcapTransformer {
 	private static final String PCAP_EXTENSION = ".pcap";
-	private static final String PCAP_DEFAULT_OUTPUT_DIRECTORY = "out\\";
+	private static final String PCAP_DEFAULT_OUTPUT_DIRECTORY = "target\\";
 	private ExecutorService pool;
 	private String directory;
 	
