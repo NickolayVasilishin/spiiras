@@ -6,4 +6,5 @@ import org.jnetpcap.packet.PcapPacket;
 
 public interface PcapTransformer {
 	public void apply(byte[] header, List<PcapPacket> packets, long count);
+	public void shutdown();
 }

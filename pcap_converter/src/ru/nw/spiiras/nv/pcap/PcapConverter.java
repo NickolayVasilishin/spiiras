@@ -2,10 +2,8 @@ package ru.nw.spiiras.nv.pcap;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.jnetpcap.PcapClosedException;
-import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;
 
 
@@ -22,7 +20,7 @@ public class PcapConverter {
 		}
 		
 		PcapTransformer t = new PcapSliceWriter();	
-		try (PcapReader r = new PcapReader(captureFile)) {
+		try (PcapNativeReader r = new PcapNativeReader(captureFile)) {
 			System.out.println("Starting...");
 			while(!r.isEmpty()){
 				List<PcapPacket> packets = r.slice();
@@ -34,7 +32,7 @@ public class PcapConverter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			((PcapSliceWriter) t).shutdown();
+			t.shutdown();
 		}
 		System.out.println("Finished.");
 	}
