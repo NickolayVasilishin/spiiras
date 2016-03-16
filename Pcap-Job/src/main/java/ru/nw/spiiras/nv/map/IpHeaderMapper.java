@@ -13,7 +13,6 @@ import org.jnetpcap.protocol.network.Ip4;
 import ru.nw.spiiras.nv.TrafficAnalyzerJob;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -26,6 +25,7 @@ public class IpHeaderMapper extends Mapper<NullWritable, NullWritable, Text, Lon
     private boolean needSource = true;
     private Map<String, Long> ipEntries;
     private Ip4 header;
+    private long processedPackets;
 
     static {
         System.loadLibrary(TrafficAnalyzerJob.LIBPCAP_LIBRARY);
@@ -37,47 +37,47 @@ public class IpHeaderMapper extends Mapper<NullWritable, NullWritable, Text, Lon
     protected void setup(Context context) throws IOException, InterruptedException {
         //TODO check paths
         String fileName = ((FileSplit) context.getInputSplit()).getPath().toUri().getPath();
-
-        System.out.println(Paths.get(fileName).toAbsolutePath());
+        Logger.getLogger(this.getClass().getSimpleName()).info("Got file to process: " + fileName);
         StringBuilder errors = new StringBuilder();
         pcapFile = Pcap.openOffline(fileName, errors);
-        System.out.println(errors);
-        //TODO
 
         ipEntries = new HashMap<>();
         //get property - direction
         // init pcap
         //then read
-
-
     }
 
     @Override
     protected void map(NullWritable key, NullWritable value, Context context) throws IOException, InterruptedException {
         //TODO optimize
-        pcapFile.loop(-1, new PcapPacketHandler<String>() {
+        pcapFile.loop(-1,
+                new PcapPacketHandler<String>() {
             @Override
             public void nextPacket(PcapPacket packet, String user) {
-
+                processedPackets++;
                 header = new Ip4();
                 if (!packet.hasHeader(header))
                     return;
                 packet.getHeader(header);
                 String ip = FormatUtils.ip(needSource ? header.source() : header.destination());
-                Logger.getLogger(this.getClass().getSimpleName()).info("Processing packet: " + ip);
-
                 if (ipEntries.containsKey(ip)) {
                     ipEntries.put(ip, ipEntries.get(ip) + 1);
                 } else {
                     ipEntries.put(ip, 1L);
                 }
-
             }
-        }, "nv");
+        },
+                "nv");
+
+        Logger.getLogger(this.getClass().getSimpleName()).info("Total packets processed: " + processedPackets);
+        for(String k:ipEntries.keySet()) {
+            context.write(new Text(k), new LongWritable(ipEntries.get(k)));
+        }
     }
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
+        pcapFile.close();
         super.cleanup(context);
     }
 }

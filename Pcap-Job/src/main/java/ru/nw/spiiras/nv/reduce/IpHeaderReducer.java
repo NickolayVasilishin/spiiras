@@ -5,6 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Created by Nick on 29.02.2016.
@@ -12,11 +13,14 @@ import java.io.IOException;
 public class IpHeaderReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
+        Logger.getLogger(this.getClass().getSimpleName()).info("Reducer at setup()");
+
         super.setup(context);
     }
 
     @Override
     protected void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+        Logger.getLogger(this.getClass().getSimpleName()).info("Reduce: key - " + key);
         Long count = 0L;
         for(LongWritable value:values) {
             count += value.get();
