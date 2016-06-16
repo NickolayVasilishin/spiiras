@@ -35,29 +35,7 @@ public class BinaryUtils {
     }
 
     public static int byteToInt(byte[] b) {
-        int dataLen = b.length;
-        int idx = dataLen;
-        int val = 0;
-        int sum = 0;
-        int bit_pos = 0;
-        boolean out = false;
-
-        while(true) {
-            --idx;
-            if(idx < 0) {
-                return val;
-            }
-
-            while(bit_pos < 8) {
-                int var7 = b[idx] >> bit_pos & 1;
-                sum |= var7 << bit_pos;
-                ++bit_pos;
-            }
-
-            val |= sum << (dataLen - 1 - idx) * 8;
-            bit_pos = 0;
-            sum = 0;
-        }
+        return byteToInt(b, b.length);
     }
 
     public static int byteToInt(byte[] b, int len) {

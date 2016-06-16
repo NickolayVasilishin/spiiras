@@ -1,4 +1,4 @@
-package ru.nw.spiiras.nv.InputFormat;
+package ru.nw.spiiras.nv.input;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,7 +95,7 @@ public class PcapVlenRecordReader extends RecordReader<LongWritable, BytesWritab
         int newSize = 0;
 
         while (pos < end) {
-            newSize = in.readLine(value, maxLineLength, Math.max((int) Math.min(Integer.MAX_VALUE, end - pos), maxLineLength));
+            newSize = in.readLine(value);
             if (newSize == 0) {
                 pos = end;
                 break;

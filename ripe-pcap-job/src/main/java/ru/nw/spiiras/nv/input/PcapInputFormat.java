@@ -1,4 +1,4 @@
-package ru.nw.spiiras.nv.InputFormat;
+package ru.nw.spiiras.nv.input;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
