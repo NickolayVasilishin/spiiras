@@ -20,7 +20,6 @@ public class IpHeaderReducer extends Reducer<Text, LongWritable, Text, LongWrita
 
     @Override
     protected void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
-        Logger.getLogger(this.getClass().getSimpleName()).info("Reduce: key - " + key);
         Long count = 0L;
         for(LongWritable value:values) {
             count += value.get();
