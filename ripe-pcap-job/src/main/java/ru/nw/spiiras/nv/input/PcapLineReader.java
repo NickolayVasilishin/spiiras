@@ -1,4 +1,4 @@
-package ru.nw.spiiras.nv.InputFormat;
+package ru.nw.spiiras.nv.input;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.BytesWritable;
@@ -8,6 +8,7 @@ import ru.nw.spiiras.nv.utils.Bytes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 public class PcapLineReader {
     private static final int DEFAULT_BUFFER_SIZE = 2048;
@@ -45,7 +46,8 @@ public class PcapLineReader {
     }
 
     public PcapLineReader(InputStream in, Configuration conf) throws IOException {
-        this(in, DEFAULT_BUFFER_SIZE, conf.getLong("pcap.file.captime.min", 1309412600L), conf.getLong("pcap.file.captime.max", 1309585400L));
+        //need to take timestamps from distributed cache
+        this(in, DEFAULT_BUFFER_SIZE, conf.getLong("pcap.file.captime.min", 1309412600L), conf.getLong("pcap.file.captime.max", new Date().getTime()));
     }
 
     public void close() throws IOException {
@@ -185,7 +187,7 @@ public class PcapLineReader {
         return bufferLength;
     }
 
-    public int readLine(BytesWritable bytes, int maxLineLength, int maxBytesToConsume) throws IOException {
+    public int readLine(BytesWritable bytes) throws IOException {
         bytes.set(new BytesWritable());
         boolean hitEndOfFile = false;
         long bytesConsumed = 0L;
@@ -207,11 +209,4 @@ public class PcapLineReader {
         return (int) Math.min(bytesConsumed, 2147483647L);
     }
 
-    public int readLine(BytesWritable str, int maxLineLength) throws IOException {
-        return this.readLine(str, maxLineLength, 2147483647);
-    }
-
-    public int readLine(BytesWritable str) throws IOException {
-        return this.readLine(str, 2147483647, 2147483647);
-    }
 }

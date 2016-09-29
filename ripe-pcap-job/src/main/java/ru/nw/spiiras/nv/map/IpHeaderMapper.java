@@ -1,6 +1,5 @@
 package ru.nw.spiiras.nv.map;
 
-import net.ripe.hadoop.pcap.packet.HttpPacket;
 import net.ripe.hadoop.pcap.packet.Packet;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.ObjectWritable;

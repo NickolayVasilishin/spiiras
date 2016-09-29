@@ -1,4 +1,4 @@
-package ru.nw.spiiras.nv.InputFormat;
+package ru.nw.spiiras.nv.input;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,8 +17,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
 import java.io.IOException;
 
-public class PcapVlenRecordReader extends RecordReader<LongWritable, BytesWritable> {
-    private static final Log LOG = LogFactory.getLog(PcapVlenRecordReader.class.getName());
+public class PcapRecordReader extends RecordReader<LongWritable, BytesWritable> {
+    private static final Log LOG = LogFactory.getLog(PcapRecordReader.class.getName());
     private CompressionCodecFactory compressionCodecs;
     private long start;
     private long pos;
@@ -29,7 +29,7 @@ public class PcapVlenRecordReader extends RecordReader<LongWritable, BytesWritab
     private LongWritable key;
     private BytesWritable value;
 
-    public PcapVlenRecordReader() {
+    public PcapRecordReader() {
     }
 
     public void initialize(InputSplit genericSplit, TaskAttemptContext context) throws IOException {
@@ -62,7 +62,6 @@ public class PcapVlenRecordReader extends RecordReader<LongWritable, BytesWritab
             in = new PcapLineReader(fileIn, job);
         }
 
-        //TODO ???
         if (skipFileHeader && fileHeaderSkipProperty) {
             start += (long) in.readFileHeader();
         }
@@ -95,7 +94,7 @@ public class PcapVlenRecordReader extends RecordReader<LongWritable, BytesWritab
         int newSize = 0;
 
         while (pos < end) {
-            newSize = in.readLine(value, maxLineLength, Math.max((int) Math.min(Integer.MAX_VALUE, end - pos), maxLineLength));
+            newSize = in.readLine(value);
             if (newSize == 0) {
                 pos = end;
                 break;
