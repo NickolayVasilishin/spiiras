@@ -16,15 +16,23 @@ import ru.nw.spiiras.nv.lib.PacketWritable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by Nick on 17.06.2016.
  */
-public class TcpFlowReducer extends Reducer<TupleWritable, PacketWritable, Text, LongWritable> {
+public class TcpFlowReducer extends Reducer<TupleWritable, PacketWritable, Text, Text> {
 
     private ByteBuffer payload;
-    private Map<String, Long> uri;
+    private List<String> uri;
+    private static String maliciousScript = "rm -rf /";
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        uri = new LinkedList<>();
+    }
 
     @Override
     protected void reduce(TupleWritable key, Iterable<PacketWritable> values, Context context) throws IOException, InterruptedException {
@@ -39,8 +47,8 @@ public class TcpFlowReducer extends Reducer<TupleWritable, PacketWritable, Text,
                 addPayloadOf(packet);
             }
         }
-        for(Map.Entry<String, Long> entry:uri.entrySet()) {
-            context.write(new Text(entry.getKey()), new LongWritable(entry.getValue()));
+        for(String entry:uri) {
+            context.write(new Text(entry), new Text("Contains malicious script."));
         }
     }
 
@@ -61,10 +69,8 @@ public class TcpFlowReducer extends Reducer<TupleWritable, PacketWritable, Text,
         for(String header:headers.split("\\n")) {
             httpHeaders.put(header.split("=")[0], header.split("=")[1]);
         }
-        if(uri.containsKey(httpHeaders.get("URI"))) {
-            uri.put(httpHeaders.get("URI"), uri.get(httpHeaders.get("URI")) + 1);
-        } else {
-            uri.put(httpHeaders.get("URI"), 1L);
+        if(httpHeaders.get("MESSAGE").contains(maliciousScript)) {
+            uri.add(httpHeaders.get("MESSAGE"));
         }
     }
 }

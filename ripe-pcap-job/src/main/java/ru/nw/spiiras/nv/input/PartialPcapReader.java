@@ -21,15 +21,6 @@ public class PartialPcapReader extends PcapReader {
                     -1, -1, 0, 0,
                     1, 0, 0, 0
             };
-//            {
-//                    0xa1, 0xb2, 0x3c, 0x4d,
-//                    0x0, 0x2,
-//                    0x0, 0x4,
-//                    0x0, 0x0, 0x0, 0x0,
-//                    0x0, 0x0, 0x0, 0x0,
-//                    0x0, 0x0, 0xff, 0xff,
-//                    0x0, 0x0, 0x0, 0x1
-//            };
 
     public PartialPcapReader(DataInputStream is) throws IOException {
         super(new DataInputStream(new SequenceInputStream(new ByteArrayInputStream(PCAP_DEFAULT_GLOBAL_HEADER), is)));

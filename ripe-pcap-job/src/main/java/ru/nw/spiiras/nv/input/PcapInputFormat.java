@@ -16,7 +16,7 @@ public class PcapInputFormat extends FileInputFormat<LongWritable, BytesWritable
     }
 
     public RecordReader<LongWritable, BytesWritable> createRecordReader(InputSplit split, TaskAttemptContext context) {
-        return new PcapVlenRecordReader();
+        return new PcapRecordReader();
     }
 
     protected boolean isSplitable(JobContext context, Path file) {
